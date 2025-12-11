@@ -27,15 +27,13 @@ The project is implemented entirely within the accompanying Jupyter notebook.
 The dataset used in this project is available on Kaggle:
 
 NBA Traditional Box Score Dataset  
-https://www.kaggle.com/datasets
+https://www.kaggle.com/datasets/szymonjwiak/nba-traditional
 
 Due to licensing and size restrictions, the full dataset is not included in this repository.  
 To reproduce the results:
 
 1. Download the dataset from Kaggle.  
 2. Place the file in the `data/` directory as `traditional.csv`.
-
-A small sample dataset may optionally be included for demonstration purposes.
 
 ---
 
@@ -87,45 +85,177 @@ A binary target variable `TRIPLE-DOUBLE` is constructed using this definition.
 
 ---
 
-## Results
+# Results
 
-After model training and threshold optimization, the following evaluations are performed:
-
-1. Logistic Regression (default threshold 0.5)  
-2. Logistic Regression (F1-optimized threshold)  
-3. XGBoost (default threshold 0.5)  
-4. XGBoost (F1-optimized threshold)
-
-Insert actual evaluation outputs here after running the notebook locally. For example:
-
-```
-Classification Report (Logistic Regression, threshold = 0.5)
-Confusion Matrix (...)
-Precision, Recall, F1 Score (...)
-
-Classification Report (Logistic Regression, F1-optimized threshold = t*)
-Confusion Matrix (...)
-Precision, Recall, F1 Score (...)
-```
-
-Add confusion matrices, ROC curves, or any additional visualizations in the `images/` directory and reference them here.
+Below are the actual results from the training and evaluation pipeline.
 
 ---
 
-## Repository Structure
+# Logistic Regression
+
+### Cross-Validation Best Parameters
+```
+{'logreg__C': 0.001,
+ 'logreg__class_weight': None,
+ 'logreg__penalty': 'l2'}
+```
+
+### Best Precision on Undersampled Training Set
+```
+0.8425069124423963
+```
+
+---
+
+## Logistic Regression – Evaluation on Full Test Set (Threshold = 0.5)
+
+```
+              precision    recall  f1-score   support
+
+           0       1.00      1.00      1.00     66398
+           1       0.28      0.15      0.20       300
+
+    accuracy                           0.99     66698
+   macro avg       0.64      0.58      0.60     66698
+weighted avg       0.99      0.99      0.99     66698
+```
+
+Confusion Matrix:
+```
+[[66281   117]
+ [  254    46]]
+```
+
+---
+
+## Logistic Regression – F1-Optimized Threshold
+
+**Best Threshold:**
+```
+0.32
+```
+
+**Best F1 Score:**
+```
+0.2695187165775401
+```
+
+### Evaluation at F1-Optimized Threshold
+```
+              precision    recall  f1-score   support
+
+           0       1.00      0.99      0.99     66398
+           1       0.20      0.42      0.27       300
+
+    accuracy                           0.99     66698
+   macro avg       0.60      0.71      0.63     66698
+weighted avg       0.99      0.99      0.99     66698
+```
+
+Confusion Matrix:
+```
+[[65889   509]
+ [  174   126]]
+```
+
+---
+
+# XGBoost
+
+### scale_pos_weight During Training:
+```
+221.8207126948775
+```
+
+### Cross-Validation Best Parameters
+```
+{
+ 'colsample_bytree': 1.0,
+ 'learning_rate': 0.01,
+ 'max_depth': 3,
+ 'n_estimators': 200,
+ 'scale_pos_weight': 1,
+ 'subsample': 0.8
+}
+```
+
+### Best Accuracy in Cross-Validation
+```
+0.970121806177343
+```
+
+---
+
+## XGBoost – Evaluation on Full Test Set (Threshold = 0.5)
+
+```
+              precision    recall  f1-score   support
+
+           0       1.00      0.99      1.00     66398
+           1       0.23      0.40      0.29       300
+
+    accuracy                           0.99     66698
+   macro avg       0.61      0.70      0.64     66698
+weighted avg       0.99      0.99      0.99     66698
+```
+
+Confusion Matrix:
+```
+[[65996   402]
+ [  179   121]]
+```
+
+Accuracy:
+```
+0.9706023633394179
+```
+
+---
+
+## XGBoost – Evaluation at F1-Optimized Threshold
+
+```
+              precision    recall  f1-score   support
+
+           0       1.00      0.98      0.99     66398
+           1       0.14      0.60      0.23       300
+
+    accuracy                           0.98     66698
+   macro avg       0.57      0.79      0.61     66698
+weighted avg       0.99      0.98      0.99     66698
+```
+
+Confusion Matrix:
+```
+[[65303  1095]
+ [  120   180]]
+```
+
+---
+
+# Key Insights
+
+- Logistic Regression performs extremely well on the majority class but has limited ability to detect rare triple-double events without threshold tuning.
+- Threshold tuning significantly increases recall for both models, demonstrating the importance of adjusting decision boundaries in imbalanced classification.
+- XGBoost outperforms Logistic Regression in recall and F1 when using the optimized threshold, showing its ability to model more complex relationships.
+- Even with advanced techniques, predicting triple-doubles remains difficult due to extreme class imbalance and variability in player performance.
+- Rolling performance features and opponent/game context information help the model identify meaningful patterns, but prediction remains uncertain due to rarity.
+
+---
+
+# Repository Structure
 
 ```
 NBA-Triple-Double-Prediction/
 │
 ├── data/
-│   └── traditional.csv              # (not included, see Data Source)
+│   └── traditional.csv (not included)
 │
 ├── notebooks/
-│   └── modeling.ipynb               # Main analysis notebook
+│   └── modeling.ipynb
 │
 ├── images/
-│   └── confusion_matrix.png
-│   └── eda_visualization.png
+│   └── model_results.png (optional)
 │
 ├── README.md
 └── requirements.txt
@@ -133,43 +263,38 @@ NBA-Triple-Double-Prediction/
 
 ---
 
-## Installation
-
-To run this project locally:
+# Installation
 
 1. Clone the repository:
-   ```
-   git clone https://github.com/<your-username>/NBA-Triple-Double-Prediction.git
-   cd NBA-Triple-Double-Prediction
-   ```
+```
+git clone https://github.com/<your-username>/NBA-Triple-Double-Prediction.git
+cd NBA-Triple-Double-Prediction
+```
 
 2. Install dependencies:
-   ```
-   pip install -r requirements.txt
-   ```
+```
+pip install -r requirements.txt
+```
 
-3. Add the dataset to the `data/` directory as `traditional.csv`.
+3. Add the dataset to the `data/` directory as:
+```
+data/traditional.csv
+```
 
-4. Open and run the notebook:
-   ```
-   jupyter notebook notebooks/modeling.ipynb
-   ```
-
----
-
-## Future Work
-
-- Additional models such as Random Forest, Gradient Boosting, or Neural Networks  
-- Incorporation of more advanced player tracking data  
-- Deployment of a triple-double probability dashboard  
-- Inclusion of temporal models capturing player momentum over extended windows  
+4. Run the notebook:
+```
+jupyter notebook notebooks/modeling.ipynb
+```
 
 ---
 
-## Contact
+# Future Work
 
-Carlo Uy  
-Email: carlo88uy@gmail.com  
-LinkedIn: [add link]  
-GitHub: [add link]
+- Expand modeling to include Random Forest, LightGBM, or Neural Networks  
+- Explore temporal models such as LSTM or transformer-based architectures  
+- Add player tracking and possession-level features  
+- Deploy a probability dashboard for triple-double prediction  
+- Experiment with oversampling methods such as SMOTE  
+
+---
 
