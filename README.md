@@ -1,100 +1,93 @@
-# NBA-Triple-Double-Prediction
-A basic machine learning project that predicts the likelihood of an NBA player achieving a triple-double by combining exploratory data analysis, feature engineering, and multiple classification models to uncover the key factors driving elite in-game performance.
-## Project Overview
+# NBA Triple-Double Prediction
+## Introduction
 
-This project focuses on predicting whether an NBA player will achieve a triple-double in a given game. Using historical player game logs, I performed exploratory data analysis, cleaned and transformed the dataset, and applied classification models to estimate triple-double likelihood.
+Triple-doubles are rare events in the NBA, making them a challenging prediction problem due to heavy class imbalance. This project uses historical player box score data to build models capable of estimating triple-double probability based on recent player performance and game context.
 
-The project explores which game statistics most strongly influence triple-double performance and how different models handle the rarity of triple-doubles.
+The analysis includes:
 
-### Skills Demonstrated
+Creating a binary target variable for triple-double occurrences
 
-Machine Learning Classification
+Generating rolling average features using recent player statistics
 
-Feature Engineering
+One-hot encoding game context variables such as opponent and game type
 
-Handling Imbalanced Datasets
+Training Logistic Regression and XGBoost classification models
 
-Exploratory Data Analysis (EDA)
+Addressing class imbalance through undersampling and class-weighting
 
-Model Evaluation (Precision, Recall, F1, AUC)
+Optimizing decision thresholds to improve F1 performance
 
-Data Cleaning & Preprocessing
+Evaluating and comparing models on a held-out test set
 
-Visualization & Insight Communication
+The project is implemented entirely within the accompanying Jupyter notebook.
 
-### Technologies Used
+## Data Source
 
-Python
+The dataset used in this project is available on Kaggle:
 
-Pandas, NumPy
+NBA Traditional Box Score Dataset
+https://www.kaggle.com/datasets/szymonjwiak/nba-traditional
 
-Scikit-learn
+**Due to licensing and size restrictions, the full dataset is not included in this repository.**
+To reproduce the results:
 
-Matplotlib, Seaborn
+Download the dataset from Kaggle.
 
-Jupyter Notebook
+Place the file in the data/ directory as traditional.csv.
 
-# Project Workflow
-1. Data Collection & Cleaning
+A small sample dataset may optionally be included for demonstration purposes.
 
-Collected and standardized NBA player game logs
-
-Cleaned missing values and normalized key statistical fields
-
-Added engineered features such as recent performance trends and usage-based metrics
-
-2. Exploratory Data Analysis
-
-Visualized distributions of common player statistics
-
-Compared triple-double vs. non–triple-double game profiles
-
-Identified patterns in assists, rebounds, minutes played, and efficiency
-
-3. Feature Engineering
-
-Examples of engineered predictors:
-
-Rolling averages of player stats
-
-Rebound + assist ratios
-
-Usage rate and efficiency metrics
-
-Momentum-based features
-
-4. Modeling
-
-Experimented with multiple classification models:
-
+Examples
 Logistic Regression
 
-Random Forest
+A Logistic Regression model is trained with standardized features and class weighting to compensate for the extreme imbalance between triple-double and non–triple-double samples. Performance is evaluated using both the default probability threshold and an F1-optimized threshold.
 
-Decision Tree
+XGBoost Classification
 
-(Add more if applicable)
+An XGBoost model is trained with parameter tuning using grid search and K-fold cross-validation. The model incorporates imbalance-handling strategies such as scaled positive class weighting. Threshold tuning is again performed to improve F1 score.
 
-Approaches for class imbalance:
+These examples illustrate the effect of feature engineering, imbalance handling, and threshold selection on prediction performance.
 
-Class weighting
+## Methodology
+Label Construction
 
-Oversampling (if used)
+A triple-double is defined as achieving at least 10 in three or more of the following categories:
 
-5. Evaluation Metrics
+Points
 
-Confusion Matrix
+Rebounds
 
-Precision & Recall
+Assists
 
-F1-Score
+Steals
 
-ROC-AUC
+Blocks
 
-### Key Insights
+A binary target variable TRIPLE-DOUBLE is constructed using this definition.
 
-Triple-doubles occur in less than 1% of NBA player games, making prediction challenging and requiring imbalance-aware methods.
+### Feature Engineering
 
-Minutes played, rebounds, assists, and usage metrics were among the strongest predictors.
+**Rolling Averages (Last 5 Games)**
+Rolling means (shifted by one game to avoid target leakage) are computed per player for:
+PTS, REB, AST, STL, BLK, and MIN.
 
-Models using class weighting significantly improved recall (catching more true triple-double cases).
+**Game Context Variables**
+
+HOME indicator
+
+Game type one-hot encoding (TYPE_PLAYOFF, TYPE_REGULAR)
+
+Opponent one-hot encoding (OPP_*)
+
+**Final Feature Set**
+A feature matrix containing rolling averages, context variables, and opponent encodings.
+
+### Handling Class Imbalance
+
+Undersampling of the majority class (non–triple-double games)
+
+Class weighting for Logistic Regression
+
+Positive class reweighting via scale_pos_weight for XGBoost
+
+Threshold tuning to optimize F1 score
