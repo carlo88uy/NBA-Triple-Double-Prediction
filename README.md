@@ -254,8 +254,8 @@ NBA-Triple-Double-Prediction/
 ├── notebooks/
 │   └── modeling.ipynb
 │
-├── images/
-│   └── model_results.png (optional)
+├── images/ (none included yet)
+|
 │
 ├── README.md
 └── requirements.txt
