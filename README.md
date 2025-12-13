@@ -4,6 +4,10 @@ This repository contains an end-to-end machine learning project designed to pred
 
 ---
 
+- [Data Source](#data-source)
+- [Repository structure](#repository-structure)
+- [Installation method](#installation)
+- [Methodolody](#methodology)
 ## Introduction
 
 Triple-doubles are rare events in the NBA, making them a challenging prediction problem due to heavy class imbalance. This project uses historical player box score data to build models capable of estimating triple-double probability based on recent player performance and game context.
@@ -37,7 +41,47 @@ To reproduce the results:
 
 ---
 
-## Examples
+# Repository Structure
+
+```
+NBA-Triple-Double-Prediction/
+│
+├── data/
+│   └── traditional.csv (not included)
+│
+├── notebooks/
+│   └── modeling.ipynb
+│
+├── images/ (none included yet)
+|
+│
+|── README.md
+```
+
+---
+
+# Installation
+
+1. Clone the repository:
+```
+git clone https://github.com/<your-username>/NBA-Triple-Double-Prediction.git
+cd NBA-Triple-Double-Prediction
+```
+
+2. Install dependencies
+
+3. Add the dataset to the `data/` directory as:
+```
+data/traditional.csv
+```
+
+4. Run the notebook:
+```
+jupyter notebook notebooks/modeling.ipynb
+```
+
+---
+## Models used
 
 ### Logistic Regression  
 A Logistic Regression model is trained with standardized features and class weighting to compensate for the extreme imbalance between triple-double and non–triple-double samples. Performance is evaluated using both the default probability threshold and an F1-optimized threshold.
@@ -241,50 +285,6 @@ Confusion Matrix:
 - Even with advanced techniques, predicting triple-doubles remains difficult due to extreme class imbalance and variability in player performance.
 - Rolling performance features and opponent/game context information help the model identify meaningful patterns, but prediction remains uncertain due to rarity.
 
----
-
-# Repository Structure
-
-```
-NBA-Triple-Double-Prediction/
-│
-├── data/
-│   └── traditional.csv (not included)
-│
-├── notebooks/
-│   └── modeling.ipynb
-│
-├── images/ (none included yet)
-|
-│
-├── README.md
-└── requirements.txt
-```
-
----
-
-# Installation
-
-1. Clone the repository:
-```
-git clone https://github.com/<your-username>/NBA-Triple-Double-Prediction.git
-cd NBA-Triple-Double-Prediction
-```
-
-2. Install dependencies:
-```
-pip install -r requirements.txt
-```
-
-3. Add the dataset to the `data/` directory as:
-```
-data/traditional.csv
-```
-
-4. Run the notebook:
-```
-jupyter notebook notebooks/modeling.ipynb
-```
 
 ---
 
