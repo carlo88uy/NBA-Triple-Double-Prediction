@@ -69,7 +69,9 @@ cd NBA-Triple-Double-Prediction
 ```
 
 2. Install dependencies
-
+   ```bash
+   pip install pandas numpy scikit-learn matplotlib seaborn
+   ```
 3. Add the dataset to the `data/` directory as:
 ```
 data/traditional.csv
@@ -95,185 +97,35 @@ These examples illustrate the effect of feature engineering, imbalance handling,
 
 ## Methodology
 
-### Label Construction  
-A triple-double is defined as achieving at least 10 in three or more of the following categories:
+### 1. Data Preprocessing
+- Sorted player game histories chronologically
+- Removed data leakage by using **only prior game information**
+- Encoded categorical variables
+- Handled missing values
 
-- Points  
-- Rebounds  
-- Assists  
-- Steals  
-- Blocks  
+### 2. Feature Engineering
+- Rolling and lag-based performance features
+- Game-type indicators (regular season vs. playoffs)
+- Player-specific historical trends
 
-A binary target variable `TRIPLE-DOUBLE` is constructed using this definition.
+### 3. Modeling
+- Logistic Regression (baseline model)
+- Additional classification models explored for performance comparison
 
-### Feature Engineering
+### 4. Evaluation
+- Precision, recall, and F1-score
+- Confusion matrix
+- ROC–AUC
 
-1. **Rolling Averages (Last 5 Games)**  
-   Rolling means (shifted by one game to avoid target leakage) are computed per player for:  
-   `PTS`, `REB`, `AST`, `STL`, `BLK`, and `MIN`.
-
-2. **Game Context Variables**  
-   - `HOME` indicator  
-   - Game type one-hot encoding (`TYPE_PLAYOFF`, `TYPE_REGULAR`)  
-   - Opponent one-hot encoding (`OPP_*`)
-
-3. **Final Feature Set**  
-   A feature matrix containing rolling averages, context variables, and opponent encodings.
-
-### Handling Class Imbalance
-
-- Undersampling of the majority class (non–triple-double games)  
-- Class weighting for Logistic Regression  
-- Positive class reweighting via `scale_pos_weight` for XGBoost  
-- Threshold tuning to optimize F1 score
-
+Special attention was given to **class imbalance**, as triple-doubles are relatively rare events.
 ---
+## Tools & Technologies
 
-# Results
-
-Below are the actual results from the training and evaluation pipeline.
-
----
-
-# Logistic Regression
-
-### Cross-Validation Best Parameters
-```
-{'logreg__C': 0.001,
- 'logreg__class_weight': None,
- 'logreg__penalty': 'l2'}
-```
-
-### Best Precision on Undersampled Training Set
-```
-0.8425069124423963
-```
-
----
-
-## Logistic Regression – Evaluation on Full Test Set (Threshold = 0.5)
-
-```
-              precision    recall  f1-score   support
-
-           0       1.00      1.00      1.00     66398
-           1       0.28      0.15      0.20       300
-
-    accuracy                           0.99     66698
-   macro avg       0.64      0.58      0.60     66698
-weighted avg       0.99      0.99      0.99     66698
-```
-
-Confusion Matrix:
-```
-[[66281   117]
- [  254    46]]
-```
-
----
-
-## Logistic Regression – F1-Optimized Threshold
-
-**Best Threshold:**
-```
-0.32
-```
-
-**Best F1 Score:**
-```
-0.2695187165775401
-```
-
-### Evaluation at F1-Optimized Threshold
-```
-              precision    recall  f1-score   support
-
-           0       1.00      0.99      0.99     66398
-           1       0.20      0.42      0.27       300
-
-    accuracy                           0.99     66698
-   macro avg       0.60      0.71      0.63     66698
-weighted avg       0.99      0.99      0.99     66698
-```
-
-Confusion Matrix:
-```
-[[65889   509]
- [  174   126]]
-```
-
----
-
-# XGBoost
-
-### scale_pos_weight During Training:
-```
-221.8207126948775
-```
-
-### Cross-Validation Best Parameters
-```
-{
- 'colsample_bytree': 1.0,
- 'learning_rate': 0.01,
- 'max_depth': 3,
- 'n_estimators': 200,
- 'scale_pos_weight': 1,
- 'subsample': 0.8
-}
-```
-
-### Best Accuracy in Cross-Validation
-```
-0.970121806177343
-```
-
----
-
-## XGBoost – Evaluation on Full Test Set (Threshold = 0.5)
-
-```
-              precision    recall  f1-score   support
-
-           0       1.00      0.99      1.00     66398
-           1       0.23      0.40      0.29       300
-
-    accuracy                           0.99     66698
-   macro avg       0.61      0.70      0.64     66698
-weighted avg       0.99      0.99      0.99     66698
-```
-
-Confusion Matrix:
-```
-[[65996   402]
- [  179   121]]
-```
-
-Accuracy:
-```
-0.9706023633394179
-```
-
----
-
-## XGBoost – Evaluation at F1-Optimized Threshold
-
-```
-              precision    recall  f1-score   support
-
-           0       1.00      0.98      0.99     66398
-           1       0.14      0.60      0.23       300
-
-    accuracy                           0.98     66698
-   macro avg       0.57      0.79      0.61     66698
-weighted avg       0.99      0.98      0.99     66698
-```
-
-Confusion Matrix:
-```
-[[65303  1095]
- [  120   180]]
-```
+- **Python**
+- **Pandas/NumPy**
+- **Scikit-learn**
+- Matplotlib / Seaborn**
+- **Jupyter Notebook**
 
 ---
 
@@ -284,7 +136,6 @@ Confusion Matrix:
 - XGBoost outperforms Logistic Regression in recall and F1 when using the optimized threshold, showing its ability to model more complex relationships.
 - Even with advanced techniques, predicting triple-doubles remains difficult due to extreme class imbalance and variability in player performance.
 - Rolling performance features and opponent/game context information help the model identify meaningful patterns, but prediction remains uncertain due to rarity.
-
 
 ---
 
@@ -297,4 +148,6 @@ Confusion Matrix:
 - Experiment with oversampling methods such as SMOTE  
 
 ---
+# License
+This project is licensed under the **MIT License**
 
