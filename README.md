@@ -69,9 +69,9 @@ cd NBA-Triple-Double-Prediction
 ```
 
 2. Install dependencies
-   ```bash
-   pip install pandas numpy scikit-learn matplotlib seaborn
-   ```
+```
+pip install pandas numpy scikit-learn matplotlib seaborn
+```
 3. Add the dataset to the `data/` directory as:
 ```
 data/traditional.csv
